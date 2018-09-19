@@ -56,5 +56,13 @@ public class Controller {
         advertiserDAO.deleteById(id);
     }
 
+    @GetMapping(value="/hasEnoughCredit/{id}")
+    public Boolean hasEnoughCredit(@PathVariable int id){
+        Advertiser advertiser = advertiserDAO.findBy(id);
+        if (advertiser != null && advertiser.getCreditlimit() > 0)
+            return true;
+        return false;
+    }
+
 
 }

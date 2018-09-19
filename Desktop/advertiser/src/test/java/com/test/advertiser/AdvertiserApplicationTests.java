@@ -36,8 +36,10 @@ public class AdvertiserApplicationTests {
     }
     @Test
     public void updateAdvertiser() {
+        Advertiser advertiser = advertiserDAO.findBy(1);
+        advertiser.setName("Walmart1");
+        advertiserDAO.updateAdvertiser(advertiser);
         Advertiser newAdvertiser = advertiserDAO.findBy(1);
-        newAdvertiser.setName("Walmart1");
         assertEquals("Walmart1", newAdvertiser.getName());
         assertEquals("Rick Fleming", newAdvertiser.getContact());
         assertEquals(5000, newAdvertiser.getCreditlimit());
