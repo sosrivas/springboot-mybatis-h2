@@ -26,4 +26,20 @@ public class AdvertiserApplicationTests {
         assertEquals(3000, newAdvertiser.getCreditlimit());
     }
 
+
+    @Test
+    public void getAdvertiser() {
+        Advertiser newAdvertiser = advertiserDAO.findBy(2);
+        assertEquals("Cisco Systems", newAdvertiser.getName());
+        assertEquals("Chuck Robbins", newAdvertiser.getContact());
+        assertEquals(4000, newAdvertiser.getCreditlimit());
+    }
+    @Test
+    public void updateAdvertiser() {
+        Advertiser newAdvertiser = advertiserDAO.findBy(1);
+        newAdvertiser.setName("Walmart1");
+        assertEquals("Walmart1", newAdvertiser.getName());
+        assertEquals("Rick Fleming", newAdvertiser.getContact());
+        assertEquals(5000, newAdvertiser.getCreditlimit());
+    }
 }
