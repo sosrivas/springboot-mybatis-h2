@@ -22,7 +22,7 @@ public class Controller {
     @Autowired
     AdvertiserDAO advertiserDAO;
 
-    @RequestMapping(value = "/getAll", method = RequestMethod.GET)
+    @GetMapping(value = "/getAll")
     public List<Advertiser> getAllAdvertisers(){
         return advertiserDAO.findAll();
     }
@@ -34,15 +34,15 @@ public class Controller {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestBody Advertiser advertiser) {
+    @PutMapping(value = "/update")
+    public ResponseEntity<?> update(@RequestBody Advertiser advertiser) {
         Preconditions.checkNotNull(advertiser);
         advertiserDAO.updateAdvertiser(advertiser);
+        return ResponseEntity.noContent().build();
     }
 
 
-    @RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/get/{id}")
     public Advertiser findAdvertiserBy(@PathVariable int id){
         Advertiser advertiser = advertiserDAO.findBy(id);
         if (advertiser != null)
@@ -51,14 +51,10 @@ public class Controller {
             throw new ResourceNotFoundException("No Advertiser found", "Advertiser", id);
     }
 
-//    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-//    public void delete(@PathVariable int id){
-//        int returnVal = advertiserDAO.deleteById(id);
-//        if (returnVal == 1){
-//
-//        }
-//            throw new ResourceNotFoundException("No Advertiser found", "Advertiser", id);
-//    }
+    @DeleteMapping(value = "/delete/{id}")
+    public void delete(@PathVariable int id){
+        advertiserDAO.deleteById(id);
+    }
 
 
 }
