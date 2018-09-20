@@ -3,6 +3,7 @@ package com.test.advertiser;
 import com.test.advertiser.controller.Controller;
 import com.test.advertiser.dao.AdvertiserDAO;
 import com.test.advertiser.domain.Advertiser;
+import com.test.advertiser.exception.ResourceNotFoundException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.Arrays;
 import java.util.List;
@@ -85,5 +87,43 @@ public class ControllerTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/advertiser/delete/1").accept(MediaType.APPLICATION_JSON);
         MvcResult result = mvc.perform(requestBuilder).andReturn();
         Assert.assertEquals(HttpStatus.NO_CONTENT.value(), result.getResponse().getStatus());
+    }
+
+
+    @Test
+    public void advertiser_has_enough_credit() throws Exception {
+        Advertiser advertiser = new Advertiser(1,"name", "contact", 1);
+        when(advertiserDAO.findBy(Mockito.any(Integer.class))).thenReturn(advertiser);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/advertiser/hasEnoughCredit/1")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mvc.perform(requestBuilder).andReturn();
+        Assert.assertEquals("true", result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void find_advertiser_by_id() throws Exception {
+        Advertiser advertiser = new Advertiser(1,"name", "contact", 1);
+        when(advertiserDAO.findBy(Mockito.any(Integer.class))).thenReturn(advertiser);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/advertiser/get/1")
+                .accept(MediaType.APPLICATION_JSON);
+        String expected = "{\"id\":1,\"name\":\"name\",\"contact\":\"contact\",\"creditlimit\":1}";
+        MvcResult result = mvc.perform(requestBuilder).andReturn();
+        JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
+    }
+
+    @Test
+    @ExceptionHandler(value = ResourceNotFoundException.class)
+    public void find_advertiser_by_id_throws_exception_for_invalid_id() throws Exception {
+        Advertiser advertiser = new Advertiser(1,"name", "contact", 1);
+        when(advertiserDAO.findBy(Mockito.any(Integer.class))).thenThrow(ResourceNotFoundException.class);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/advertiser/get/666")
+                .accept(MediaType.APPLICATION_JSON);
+        //String expected = "{\"id\":1,\"name\":\"name\",\"contact\":\"contact\",\"creditlimit\":1}";
+        MvcResult result = mvc.perform(requestBuilder).andReturn();
+        //JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
     }
 }
