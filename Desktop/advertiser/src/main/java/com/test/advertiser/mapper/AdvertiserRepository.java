@@ -12,6 +12,7 @@ public interface AdvertiserRepository {
     List<Advertiser> findAll();
 
     @Insert("INSERT INTO ADVERTISER (NAME, contact, CREDITLIMIT) VALUES (#{name},#{contact}, #{creditlimit})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     public int insert(Advertiser advertiser);
 
     @Update("update advertiser set name=#{name}, contact=#{contact}, creditlimit=#{creditlimit} where id=#{id}")

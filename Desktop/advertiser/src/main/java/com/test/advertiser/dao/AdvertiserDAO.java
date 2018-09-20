@@ -20,13 +20,20 @@ public class AdvertiserDAO {
         return advertiserRepository.findAdviserBy(id);
     }
 
-    public int addAdvertiser(Advertiser advertiser){
-        return advertiserRepository.insert(advertiser );
+    public Advertiser addAdvertiser(Advertiser advertiser){
+        advertiserRepository.insert(advertiser );
+        return findBy(advertiser.getId());
     }
 
-    public int updateAdvertiser(Advertiser advertiser){
-        return advertiserRepository.update(advertiser );
+    public Advertiser updateAdvertiser(Advertiser advertiser){
+        advertiserRepository.update(advertiser );
+        return advertiser;
     }
 
     public int deleteById(int id) {return advertiserRepository.deleteById(id); }
+
+    public boolean hasEnoughCredit(int id) {
+        Advertiser advertiser = advertiserRepository.findAdviserBy(id);
+        return advertiser != null && advertiser.getCreditlimit() > 0? true: false;
+    }
 }

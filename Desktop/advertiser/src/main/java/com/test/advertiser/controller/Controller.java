@@ -9,9 +9,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.lang.annotation.Annotation;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,16 +24,22 @@ public class Controller {
     @Autowired
     AdvertiserDAO advertiserDAO;
 
+    public Controller(AdvertiserDAO advertiserDAO){
+        this.advertiserDAO = advertiserDAO;
+    }
+
     @GetMapping(value = "/getAll")
     public List<Advertiser> getAllAdvertisers(){
         return advertiserDAO.findAll();
     }
 
     @PostMapping(value = "/add")
-    public ResponseEntity<?> addAdvertiser(@Valid @RequestBody Advertiser advertiser){
-        advertiserDAO.addAdvertiser(advertiser);
-        HttpHeaders headers = new HttpHeaders();
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    public ResponseEntity<Void> addAdvertiser(@Valid @RequestBody Advertiser advertiser){
+        Advertiser addedAdvertiser = advertiserDAO.addAdvertiser(advertiser);
+        if (null == addedAdvertiser)
+            return ResponseEntity.noContent().build();
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/advertiser/get/{id}").buildAndExpand(addedAdvertiser.getId()).toUri();
+        return ResponseEntity.created(location).build();
     }
 
     @PutMapping(value = "/update")
@@ -52,8 +60,9 @@ public class Controller {
     }
 
     @DeleteMapping(value = "/delete/{id}")
-    public void delete(@PathVariable int id){
+    public ResponseEntity<?> delete(@PathVariable int id){
         advertiserDAO.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value="/hasEnoughCredit/{id}")

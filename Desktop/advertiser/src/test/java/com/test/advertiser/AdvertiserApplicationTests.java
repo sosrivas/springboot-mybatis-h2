@@ -3,6 +3,8 @@ package com.test.advertiser;
 import com.test.advertiser.dao.AdvertiserDAO;
 import com.test.advertiser.domain.Advertiser;
 import static org.junit.Assert.*;
+
+import com.test.advertiser.exception.ResourceNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ public class AdvertiserApplicationTests {
     AdvertiserDAO advertiserDAO;
 
     @Test
-    public void createAdvertiser() {
+    public void addAdvertiser() {
         Advertiser advertiser = new Advertiser("SS Corp", "ssourab", 3000);
         advertiserDAO.addAdvertiser(advertiser);
         Advertiser newAdvertiser = advertiserDAO.findBy(5);
@@ -29,10 +31,10 @@ public class AdvertiserApplicationTests {
 
     @Test
     public void getAdvertiser() {
-        Advertiser newAdvertiser = advertiserDAO.findBy(2);
-        assertEquals("Cisco Systems", newAdvertiser.getName());
-        assertEquals("Chuck Robbins", newAdvertiser.getContact());
-        assertEquals(4000, newAdvertiser.getCreditlimit());
+        Advertiser newAdvertiser = advertiserDAO.findBy(3);
+        assertEquals("Apple", newAdvertiser.getName());
+        assertEquals("Tim Cook", newAdvertiser.getContact());
+        assertEquals(70000, newAdvertiser.getCreditlimit());
     }
     @Test
     public void updateAdvertiser() {
@@ -43,5 +45,18 @@ public class AdvertiserApplicationTests {
         assertEquals("Walmart1", newAdvertiser.getName());
         assertEquals("Rick Fleming", newAdvertiser.getContact());
         assertEquals(5000, newAdvertiser.getCreditlimit());
+    }
+
+    @Test
+    public void deleteAdvertiser() {
+        advertiserDAO.deleteById(2);
+        Advertiser newAdvertiser = advertiserDAO.findBy(2);
+        assertNull(newAdvertiser);
+    }
+
+    @Test
+    public void hasEnoughCredit() {
+        boolean hasEnoughMoney = advertiserDAO.hasEnoughCredit(3);
+        assertTrue(hasEnoughMoney);
     }
 }
